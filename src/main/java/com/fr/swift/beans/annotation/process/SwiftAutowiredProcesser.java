@@ -1,15 +1,14 @@
 package com.fr.swift.beans.annotation.process;
 
-import com.fr.swift.SwiftContext;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftQualilifer;
-import com.fr.swift.beans.annotation.handler.AnnotationHandlerContext;
-import com.fr.swift.beans.annotation.handler.SwiftAutowiredHandler;
 import com.fr.swift.beans.exception.NoSuchBeanException;
 import com.fr.swift.beans.exception.SwiftBeanException;
 import com.fr.swift.beans.factory.SwiftBeanDefinition;
+import com.fr.swift.beans.factory.SwiftBeanRegistry;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * @author anner
@@ -19,34 +18,34 @@ import java.lang.reflect.Field;
 public class SwiftAutowiredProcesser implements BeanProcesser {
     @Override
     public void process(SwiftBeanDefinition beanDefinition) {
-        SwiftAutoWired autoWired = beanDefinition.getClazz().getAnnotation(SwiftAutoWired.class);
-        if (autoWired != null) {
-            //判断注解在属性上的位置
-            Field[] fields = beanDefinition.getClazz().getFields();
-            for (Field field : fields) {
-                SwiftAutoWired target = field.getAnnotation(SwiftAutoWired.class);
-                if (target != null) {
-                    //判断注解对象是否被托管
-                    try {
-                        SwiftContext.get().getBean(field.getClass());
-                    } catch (NoSuchBeanException noSuchBeanException) {
-                        //bean不存在,直接结束
-                        throw noSuchBeanException;
-                    } catch (SwiftBeanException swiftBeanException) {
-                        //存在多个bean，判断注解SwiftQualilifer是否存在
-                        if (field.getAnnotation(SwiftQualilifer.class) != null) {
-                            beanDefinition.getAutowiredClassList().add(field.getClass());
-                        } else {
-                            throw swiftBeanException;
-                        }
+        //判断注解在属性上的位置
+        Field[] fields = beanDefinition.getClazz().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            SwiftAutoWired target = field.getAnnotation(SwiftAutoWired.class);
+            if (target != null) {
+                //判断注解对象是否被托管
+                List<String> beanNames = SwiftBeanRegistry.getInstance().getBeanNamesByType(field.getType());
+                if (beanNames.size() == 0) {
+                    throw new NoSuchBeanException(field.getType().getName());
+                } else if (beanNames.size() == 1) {
+                    //单例且唯一
+                    beanDefinition.getAutowiredClassList().add(field.getType());
+                } else {
+                    //存在多个bean，判断注解SwiftQualilifer是否存在
+                    if (field.getAnnotation(SwiftQualilifer.class) != null) {
+                        beanDefinition.getAutowiredClassList().add(field.getType());
+                    } else {
+                        throw new SwiftBeanException(beanDefinition.getClazz().getName() + " contains >=2 beanNames");
                     }
                 }
             }
-            //目标类存在注解对象
             if (beanDefinition.getAutowiredClassList().size() > 0) {
                 beanDefinition.setAutoWired(true);
-                //绑定handler
-                AnnotationHandlerContext.getInstance().addstartHandler(new SwiftAutowiredHandler());
+//                //绑定handler
+//                if (!AnnotationHandlerContext.getInstance().addstartHandler(new SwiftAutowiredHandler())) {
+//                    throw new SwiftBeanException("autowired processer bind handler fail");
+//                }
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.fr.swift.beans.factory;
 
 import com.fr.swift.beans.annotation.handler.AnnotationHandlerContext;
-import com.fr.swift.beans.annotation.handler.SwiftInitHandler;
 import com.fr.swift.beans.exception.NoSuchBeanException;
 import com.fr.swift.beans.exception.SwiftBeanException;
 import com.fr.swift.log.SwiftLoggers;
@@ -23,18 +22,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description
  * @since Advanced FineBI 5.0
  */
-public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactory {
+public class SwiftBeanFactory  implements BeanFactory {
+
+    private final BeanRegistry beanRegistry= SwiftBeanRegistry.getInstance();
 
     private final List<String> packageNames = new ArrayList<String>();
 
     private BeanScanner beanScanner;
 
-    private final List<String> singletonNotLoadNames = new ArrayList<String>();
+    private final List<String> singleto  nNotLoadNames = new ArrayList<String>();
 
     private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>();
 
     public SwiftBeanFactory() {
-        beanScanner = new SwiftBeanScanner(this);
+        beanScanner = new SwiftBeanScanner(beanRegistry);
     }
 
     private List<String> beanNamesLoaded = new ArrayList<String>();
@@ -43,7 +44,7 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
         String[] packageArrays = new String[packageNames.size()];
         packageNames.toArray(packageArrays);
         beanScanner.scan(packageArrays);
-        Map<String, SwiftBeanDefinition> beanDefinitionMap = getBeanDefinitionMap();
+        Map<String, SwiftBeanDefinition> beanDefinitionMap = beanRegistry.getBeanDefinitionMap();
 
         for (Map.Entry<String, SwiftBeanDefinition> entry : beanDefinitionMap.entrySet()) {
             if (entry.getValue().singleton()) {
@@ -53,6 +54,7 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
             }
         }
         while (!singletonNotLoadNames.isEmpty()) {
+            //单例对象初始化
             recursionCreateBean(beanDefinitionMap);
             beanNamesLoaded.clear();
         }
@@ -78,11 +80,11 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
 
     @Override
     public <T> T getBean(String beanName, Class<T> clazz, Object... params) {
-        List<String> names = getBeanNamesByType(clazz);
+        List<String> names = beanRegistry.getBeanNamesByType(clazz);
         if (!names.contains(beanName)) {
             throw new NoSuchBeanException(beanName);
         }
-        SwiftBeanDefinition swiftBeanDefinition = getBeanDefinition(beanName);
+        SwiftBeanDefinition swiftBeanDefinition = beanRegistry.getBeanDefinition(beanName);
         if (swiftBeanDefinition.singleton()) {
             if (!singletonObjects.containsKey(swiftBeanDefinition.getBeanName())) {
                 throw new NoSuchBeanException(swiftBeanDefinition.getBeanName());
@@ -90,7 +92,7 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
             return (T) singletonObjects.get(swiftBeanDefinition.getBeanName());
         } else {
             try {
-                SwiftBeanDefinition beanDefinition = getBeanDefinition(beanName);
+                SwiftBeanDefinition beanDefinition = beanRegistry.getBeanDefinition(beanName);
                 Class<T> beanClazz = (Class<T>) beanDefinition.getClazz();
                 return createBean(beanClazz, params);
             } catch (Exception e) {
@@ -101,11 +103,10 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
 
     @Override
     public <T> T getBean(Class<T> clazz, Object... params) {
-        List<String> names = getBeanNamesByType(clazz);
+        List<String> names = beanRegistry.getBeanNamesByType(clazz);
         if (names == null || names.isEmpty()) {
-            throw new NoSuchBeanException(clazz.getName() + " 's beanNames size is null");
-        }
-        if (names.size() >= 2) {
+            throw new SwiftBeanException(clazz.getName() + " 's beanNames size is null");
+        } else if (names.size() >= 2) {
             throw new SwiftBeanException(clazz.getName() + " 's beanNames size >= 2");
         }
         String beanName = names.get(0);
@@ -120,17 +121,17 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
 
     @Override
     public boolean isSingleton(String beanName) {
-        return getBeanDefinition(beanName).singleton();
+        return beanRegistry.getBeanDefinition(beanName).singleton();
     }
 
     @Override
     public Class<?> getType(String beanName) {
-        return getBeanDefinition(beanName).getClazz();
+        return beanRegistry.getBeanDefinition(beanName).getClazz();
     }
 
     @Override
     public boolean isTypeMatch(String name, Class<?> typeToMatch) {
-        List<String> names = getBeanNamesByType(typeToMatch);
+        List<String> names = beanRegistry.getBeanNamesByType(typeToMatch);
         return names.contains(name);
     }
 
@@ -154,7 +155,7 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
 
     public List<Class<?>> getClassesByAnnotations(Class<? extends Annotation> annotation) {
         List<Class<?>> resultList = new ArrayList<Class<?>>();
-        Map<String, SwiftBeanDefinition> swiftBeanDefinitionMap = getBeanDefinitionMap();
+        Map<String, SwiftBeanDefinition> swiftBeanDefinitionMap = beanRegistry.getBeanDefinitionMap();
         for (Map.Entry<String, SwiftBeanDefinition> entry : swiftBeanDefinitionMap.entrySet()) {
             Annotation marked = entry.getValue().getClazz().getAnnotation(annotation);
             if (marked != null) {
@@ -163,6 +164,7 @@ public class SwiftBeanFactory extends AbstractBeanRegistry implements BeanFactor
         }
         return resultList;
     }
+
 
     private <T> T createBean(Class<T> tClass, Object... params) throws Exception {
         Class<?>[] parameterTypes = new Class[params.length];

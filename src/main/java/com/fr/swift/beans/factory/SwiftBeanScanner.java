@@ -1,7 +1,7 @@
 package com.fr.swift.beans.factory;
 
 import com.fr.swift.beans.annotation.SwiftBean;
-import com.fr.swift.beans.annotation.process.AnntationProcesserContext;
+import com.fr.swift.beans.annotation.process.AnnotationProcesserContext;
 import com.fr.swift.beans.factory.classreading.ClassAnnotations;
 import com.fr.swift.beans.factory.classreading.ClassReader;
 import com.fr.swift.log.SwiftLoggers;
@@ -49,6 +49,7 @@ public class SwiftBeanScanner implements BeanScanner {
 
     private void resolveBeanDefinition(List<Class<?>> clazzList) {
         if (clazzList != null && clazzList.size() > 0) {
+            List<SwiftBeanDefinition> beanDefinitionList=new ArrayList<>();
             for (Class<?> clazz : clazzList) {
                 SwiftBean swiftBean = clazz.getAnnotation(SwiftBean.class);
                 if (swiftBean != null) {
@@ -57,11 +58,15 @@ public class SwiftBeanScanner implements BeanScanner {
                     for (Class<?> anInterface : interfaces) {
                         beanRegistry.registerBeanNamesByType(anInterface, beanName);
                     }
-                    //开始处理每一个注解
+                    //开始处理每一个注解,默认是单例
                     SwiftBeanDefinition beanDefinition=new SwiftBeanDefinition(clazz,beanName);
                     beanRegistry.registerBeanDefinition(beanName,beanDefinition);
-                    AnntationProcesserContext.getInstance().process(beanDefinition);
+                    beanDefinitionList.add(beanDefinition);
                 }
+            }
+            //保证获取全部的SwiftBean
+            for (SwiftBeanDefinition beanDefinition : beanDefinitionList) {
+                AnnotationProcesserContext.getInstance().process(beanDefinition);
             }
         }
     }

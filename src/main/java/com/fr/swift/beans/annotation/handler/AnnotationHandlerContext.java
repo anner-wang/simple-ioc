@@ -22,12 +22,13 @@ public class AnnotationHandlerContext {
     }
 
     //绑定初始化handler
-    public void addstartHandler(BeanHandler beanHandler) {
-        startHandlers.add(beanHandler);
+    public boolean addstartHandler(BeanHandler beanHandler) {
+        return startHandlers.add(beanHandler);
     }
+
     //绑定销毁handler
-    public void addendHandler(BeanHandler beanHandler){
-        endHandlers.add(beanHandler);
+    public boolean addendHandler(BeanHandler beanHandler) {
+        return endHandlers.add(beanHandler);
     }
 
 
@@ -42,4 +43,5 @@ public class AnnotationHandlerContext {
             beanHandler.handle(object, clazz);
         }
     }
+
 }

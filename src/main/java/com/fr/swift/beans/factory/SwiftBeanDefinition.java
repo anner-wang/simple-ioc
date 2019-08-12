@@ -22,11 +22,11 @@ public class SwiftBeanDefinition {
 
     private boolean autoWired;
 
-    private List<Class<?>> autowiredClassList=new LinkedList<>();
+    private List<Class<?>> autowiredClassList = new LinkedList<>();
 
-    private String initMethod;
+    private String initMethod = "";
 
-    private String destroyMethod;
+    private String destroyMethod = "";
 
     public SwiftBeanDefinition(Class<?> clazz, String beanName) {
         this(clazz, beanName, SwiftScope.SINGLETON);

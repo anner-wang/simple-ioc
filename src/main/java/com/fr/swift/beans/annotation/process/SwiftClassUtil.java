@@ -1,5 +1,6 @@
 package com.fr.swift.beans.annotation.process;
 
+import com.fr.swift.util.Crasher;
 
 import java.beans.Introspector;
 import java.util.HashSet;
@@ -51,7 +52,7 @@ public class SwiftClassUtil {
      */
     protected static String getDefaultBeanName(String className) {
         if (className == null) {
-
+            Crasher.crash("className is null");
         }
         int lastDotIndex = className.lastIndexOf(46);
         int nameEndIndex = className.indexOf("$$");
