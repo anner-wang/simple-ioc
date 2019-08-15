@@ -8,5 +8,5 @@ import com.fr.swift.beans.factory.SwiftBeanDefinition;
  * @description
  */
 public interface BeanProcesser {
-   void process(SwiftBeanDefinition beanDefinition);
+    void process(SwiftBeanDefinition beanDefinition);
 }

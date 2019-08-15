@@ -50,7 +50,7 @@ public class SwiftClassUtil {
      * @param className
      * @return
      */
-    protected static String getDefaultBeanName(String className) {
+    public static String getDefaultBeanName(String className) {
         if (className == null) {
             Crasher.crash("className is null");
         }

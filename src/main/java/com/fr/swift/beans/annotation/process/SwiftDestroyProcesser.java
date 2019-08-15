@@ -1,8 +1,6 @@
 package com.fr.swift.beans.annotation.process;
 
 import com.fr.swift.beans.annotation.SwiftDestroy;
-import com.fr.swift.beans.annotation.handler.AnnotationHandlerContext;
-import com.fr.swift.beans.annotation.handler.SwiftDestroyHandler;
 import com.fr.swift.beans.factory.SwiftBeanDefinition;
 
 import java.lang.reflect.Method;
@@ -20,7 +18,6 @@ public class SwiftDestroyProcesser implements BeanProcesser {
             SwiftDestroy destroy = method.getAnnotation(SwiftDestroy.class);
             if (destroy != null) {
                 beanDefinition.setDestroyMethod(method.getName());
-                AnnotationHandlerContext.getInstance().addendHandler(new SwiftDestroyHandler());
                 return;
             }
         }

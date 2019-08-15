@@ -12,23 +12,26 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class created on 2018/11/28
  *
  * @author Lucifer
- * @description 单独抽出来成为单例模式，向外提供容器的两个映射关系
+ * @description
  * @since Advanced FineBI 5.0
  */
-public  class SwiftBeanRegistry implements BeanRegistry {
+public class SwiftBeanRegistry implements BeanRegistry {
 
-    private final static SwiftBeanRegistry INSTANCE=new SwiftBeanRegistry();
+    private final static SwiftBeanRegistry INSTANCE = new SwiftBeanRegistry();
 
-    private SwiftBeanRegistry(){
+    private SwiftBeanRegistry() {
     }
 
-    public static SwiftBeanRegistry getInstance(){
+    public static SwiftBeanRegistry getInstance() {
         return INSTANCE;
     }
+
 
     private final Map<String, SwiftBeanDefinition> swiftBeanDefinitionMap = new ConcurrentHashMap<String, SwiftBeanDefinition>();
 
     private final Map<Class<?>, List<String>> allBeanNamesByType = new ConcurrentHashMap<Class<?>, List<String>>();
+
+    private Map<String, Object> singletonObjects;
 
     @Override
     public void registerBeanDefinition(String beanName, SwiftBeanDefinition beanDefinition) {
@@ -95,5 +98,13 @@ public  class SwiftBeanRegistry implements BeanRegistry {
             throw new SwiftBeanException(clazz.getName() + " has no bean names!");
         }
         return new ArrayList<String>(allBeanNamesByType.get(clazz));
+    }
+
+    public Map<String, Object> getSingletonObjects() {
+        return singletonObjects;
+    }
+
+    public void setSingletonObjects(Map<String, Object> singletonObjects) {
+        this.singletonObjects = singletonObjects;
     }
 }

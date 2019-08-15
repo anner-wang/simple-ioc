@@ -1,5 +1,7 @@
 package com.fr.swift.beans.annotation;
 
+import com.fr.swift.util.Strings;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,4 +21,10 @@ import java.lang.annotation.Target;
 // TODO: 2019/1/21 要加个懒加载
 public @interface SwiftBean {
     String name() default "";
+
+    boolean autowire() default false;
+
+    String initMethod() default "";
+
+    String destroyMethod() default "(inferred)";
 }

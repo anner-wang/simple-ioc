@@ -1,8 +1,6 @@
 package com.fr.swift.beans.annotation.process;
 
 import com.fr.swift.beans.annotation.SwiftInitMethod;
-import com.fr.swift.beans.annotation.handler.AnnotationHandlerContext;
-import com.fr.swift.beans.annotation.handler.SwiftInitHandler;
 import com.fr.swift.beans.factory.SwiftBeanDefinition;
 
 import java.lang.reflect.Method;
@@ -20,7 +18,6 @@ public class SwiftInitProcesser implements BeanProcesser {
             SwiftInitMethod initMethod = method.getAnnotation(SwiftInitMethod.class);
             if (initMethod != null) {
                 beanDefinition.setInitMethod(method.getName());
-                AnnotationHandlerContext.getInstance().addstartHandler(new SwiftInitHandler());
                 return;
             }
         }

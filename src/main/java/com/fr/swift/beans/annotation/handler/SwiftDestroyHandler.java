@@ -1,9 +1,6 @@
 package com.fr.swift.beans.annotation.handler;
 
-import com.fr.swift.beans.annotation.SwiftInitMethod;
-import com.fr.swift.beans.annotation.process.SwiftDestroyProcesser;
-import com.fr.swift.beans.factory.SwiftBeanDefinition;
-import com.fr.swift.log.SwiftLoggers;
+import com.fr.swift.beans.annotation.SwiftDestroy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,7 +12,14 @@ import java.lang.reflect.Method;
  */
 public class SwiftDestroyHandler implements BeanHandler {
     @Override
-    public void handle(Object object, Class<?> clazz) {
-
+    public void handle(Object object, Class<?> clazz) throws InvocationTargetException, IllegalAccessException {
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            SwiftDestroy destroy = method.getAnnotation(SwiftDestroy.class);
+            if (destroy != null) {
+                method.invoke(object);
+                return;
+            }
+        }
     }
 }

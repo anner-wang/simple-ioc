@@ -49,7 +49,7 @@ public class SwiftBeanScanner implements BeanScanner {
 
     private void resolveBeanDefinition(List<Class<?>> clazzList) {
         if (clazzList != null && clazzList.size() > 0) {
-            List<SwiftBeanDefinition> beanDefinitionList=new ArrayList<>();
+            List<SwiftBeanDefinition> beanDefinitionList = new ArrayList<>();
             for (Class<?> clazz : clazzList) {
                 SwiftBean swiftBean = clazz.getAnnotation(SwiftBean.class);
                 if (swiftBean != null) {
@@ -59,8 +59,8 @@ public class SwiftBeanScanner implements BeanScanner {
                         beanRegistry.registerBeanNamesByType(anInterface, beanName);
                     }
                     //开始处理每一个注解,默认是单例
-                    SwiftBeanDefinition beanDefinition=new SwiftBeanDefinition(clazz,beanName);
-                    beanRegistry.registerBeanDefinition(beanName,beanDefinition);
+                    SwiftBeanDefinition beanDefinition = new SwiftBeanDefinition(clazz, beanName);
+                    beanRegistry.registerBeanDefinition(beanName, beanDefinition);
                     beanDefinitionList.add(beanDefinition);
                 }
             }
