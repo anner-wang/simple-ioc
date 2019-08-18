@@ -1,4 +1,4 @@
-package com.fr.swift.beans.annotation.process;
+package com.fr.swift.beans.annotation.handle;
 
 import com.fr.swift.beans.annotation.SwiftAfter;
 import com.fr.swift.beans.annotation.SwiftAspect;
@@ -9,14 +9,14 @@ import com.fr.swift.beans.annotation.aop.SwiftJoinPoint;
 
 /**
  * @author anner
- * @this class created on date 2019/8/12
+ * @this class created on date 2019/8/18
  * @description
  */
-@SwiftBean(name = "testBean4")
+@SwiftBean(name = "testBean3")
 @SwiftAspect
-public class TestBean4 {
-    @SwiftPointCut(targets = {"com.fr.swift.beans.annotation.process.TestBean2.run",
-            "com.fr.swift.beans.annotation.process.TestBean3.run"})
+public class TestBean3 {
+    @SwiftPointCut(targets = {"com.fr.swift.beans.annotation.handle.TestBean1.run",
+            "com.fr.swift.beans.annotation.handle.TestBean2.run"})
     private void test() {
     }
 
