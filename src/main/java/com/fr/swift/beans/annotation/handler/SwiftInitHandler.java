@@ -1,6 +1,7 @@
 package com.fr.swift.beans.annotation.handler;
 
-import com.fr.swift.beans.annotation.SwiftInitMethod;
+import com.fr.swift.beans.factory.SwiftBeanDefinition;
+import com.fr.swift.log.SwiftLoggers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,14 +14,15 @@ import java.lang.reflect.Method;
 public class SwiftInitHandler implements BeanHandler {
 
     @Override
-    public void handle(Object object, Class<?> clazz) throws InvocationTargetException, IllegalAccessException {
-        Method[] methods = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            SwiftInitMethod initMethod = method.getAnnotation(SwiftInitMethod.class);
-            if (initMethod != null) {
-                method.invoke(object);
-                return;
+    public void handle(Object object, SwiftBeanDefinition beanDefinition) {
+        Method initMethod = beanDefinition.getInitMethod();
+        if (initMethod != null) {
+            try {
+                initMethod.invoke(object);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                SwiftLoggers.getLogger().error("can not invoke the initMethod because of IllegalAccessException or InvocationTargetException", e);
             }
         }
     }
+
 }

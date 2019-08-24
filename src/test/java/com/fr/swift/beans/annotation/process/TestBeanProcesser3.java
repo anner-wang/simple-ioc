@@ -10,19 +10,19 @@ import com.fr.swift.beans.annotation.SwiftQualifier;
  * @this class created on date 2019/8/12
  * @description 存在两个父类
  */
-@SwiftBean(name = "testBean3")
-public class TestBean3 extends TestBean2 {
+@SwiftBean
+public class TestBeanProcesser3 extends TestBeanProcesser2 {
     @SwiftAutoWired
-    @SwiftQualifier(name = "testBean2")
-    private TestBean2 testBean2;
+    @SwiftQualifier(name = "testBeanProcesser2")
+    private TestBeanProcesser2 testBean2;
 
     @SwiftAutoWired
-    @SwiftQualifier(name = "testBean1")
-    private TestBean1 testBean1Test;
+    @SwiftQualifier(name = "testBeanProcesser1")
+    private TestBeanProcesser1 testBean1Test;
 
     @SwiftAutoWired
-    @SwiftQualifier(name = "testBean1")
-    private TestBean1 testBean11;
+    @SwiftQualifier(name = "testBeanProcesser1")
+    private TestBeanProcesser1 testBean11;
 
     @SwiftDestroy
     public void testInitMethod() {

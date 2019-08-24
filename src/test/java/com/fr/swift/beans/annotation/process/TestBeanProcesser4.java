@@ -1,4 +1,4 @@
-package com.fr.swift.beans.annotation.handle;
+package com.fr.swift.beans.annotation.process;
 
 import com.fr.swift.beans.annotation.SwiftAfter;
 import com.fr.swift.beans.annotation.SwiftAspect;
@@ -9,25 +9,26 @@ import com.fr.swift.beans.annotation.aop.SwiftJoinPoint;
 
 /**
  * @author anner
- * @this class created on date 19-8-14
+ * @this class created on date 2019/8/12
  * @description
  */
-@SwiftBean(name = "beanWithAspect")
+@SwiftBean
 @SwiftAspect
-public class BeanWithAspect {
-
-    @SwiftPointCut(targets = {"com.fr.swift.beans.annotation.handle.BeanWithAutowired.run",
-                              "com.fr.swift.beans.annotation.handle.BeanWithMethod.run"})
-    private void test(){
+public class TestBeanProcesser4 {
+    @SwiftPointCut(targets = {"com.fr.swift.beans.annotation.process.TestBeanProcesser2.run",
+            "com.fr.swift.beans.annotation.process.TestBeanProcesser3.run"})
+    private void test() {
     }
+
     @SwiftBefore
-    public void before(SwiftJoinPoint joinPoint){
+    public void before(SwiftJoinPoint joinPoint) {
         System.out.println(joinPoint);
         System.out.println("before");
 
     }
+
     @SwiftAfter
-    public void after(SwiftJoinPoint joinPoint){
+    public void after(SwiftJoinPoint joinPoint) {
         System.out.println(joinPoint);
         System.out.println("after");
     }
